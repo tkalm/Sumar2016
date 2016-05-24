@@ -1,0 +1,14 @@
+#!/bin/bash
+#-----------------------------------I'm inside Tesla1
+# Updates the folder using rsync, this script should be run by Tesla1
+# This is my editing directory
+FirstSource=~/Sumar2016/TE/MMV-PcABz/
+# This is the current directory, where I compile and run the programs on Tesla1
+FirstDest=~/Sumar2016/TE/MMV-PcABz/keyrslurMM/
+# Here I run the makefile that compiles the programs
+make
+mv Adal keyrslurMM
+cd keyrslurMM
+./Adal
+#------------------------------------
+
