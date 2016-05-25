@@ -47,18 +47,12 @@
 ! Here we calculate the eigenvalues for different
 ! values of lambda.
 
-   DO n=1, 6                                                      ! n will be the number of 
-                                                                  ! eigenvalues we print for each lambda
-      DO lambda=0, 120
-         Hmat = H0 + V*0.01*lambda                                ! Define H for this lambda 
-
+   DO n=1, 6                                                      ! n is the number of eigenvalues we print 
+      DO lambda=0, 120                                            ! Notice the scaling in the following line
+         Hmat = (H0 + V*0.01*lambda)                              ! Define H for this lambda 
          ALLOCATE(Eigval(Nf),Eigvect(Nf,Nf), STAT=ierr)
-         CALL HEEVR(Hmat,Eigval,UPLO,Eigvect)                     ! Subroutine from MKL for finding
-                                                                  ! eigenvalues and vectors, input is a 
-                                                                  ! lower or upper triangular
-                                                                  
-         WRITE(12,FMT='(E15.8,2X,E15.8)') 0.01*lambda, Eigval(n)  ! Eigenvalues printed (along with
-                                                                  ! the value of lambda)
+         CALL HEEVR(Hmat,Eigval,UPLO,Eigvect)                     ! Finds the eigenvalues (and vectors) 
+         WRITE(12,FMT='(E15.8,2X,E15.8)') 0.01*lambda, Eigval(n)  ! Eigenvalues printed (along with lambda)
          DEALLOCATE(Eigval,Eigvect, STAT=ierr)
       END DO
    END DO
