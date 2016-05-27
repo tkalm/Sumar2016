@@ -1,12 +1,6 @@
    PROGRAM Adal
 !------------------------------------------------------------
-!  Let H0 be the harmonic oscillator and V=h_bar*omega*(x/a)^4
-!  where 'a' is the natural length of the system.
-!  This program calculates how the energy of each steady state 
-!  of the system H = H0 + lambda*V increases with lambda.
-!  This is achieved by evaluating H in the basis of H0
-!  and then calculating the eigenvalues of H for
-!  different values of lambda. 
+!  
 !------------------------------------------------------------
    USE omp_lib               ! For OpenMP parallel processing
    USE Mod_Precision         ! Module for setting double precision

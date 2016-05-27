@@ -21,9 +21,9 @@
 
     REAL(KIND=dp),        ALLOCATABLE, DIMENSION(:)      :: Eigval
     
-    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: H0, V, Hmat, Eigvect
+    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: H0, Ht, Hmat, rho0, rho1, rho2
    
 
-!---------------------------------------------------------------------------
+!--------------------------------------------------------------------------
 
    END MODULE Mod_Fields
