@@ -1,6 +1,8 @@
    PROGRAM Adal
 !------------------------------------------------------------
-!  
+! This program calculates the occupation of chosen states
+! of the harmonic oscillator given a constant potential 
+! is turned on at time t=0. 
 !------------------------------------------------------------
    USE omp_lib               ! For OpenMP parallel processing
    USE Mod_Precision         ! Module for setting double precision
@@ -12,52 +14,57 @@
 
    IMPLICIT NONE
 !------- Local variables ------------------------------------
-   INTEGER         :: i, j, ierr, lambda, n
+   INTEGER         :: t, i, ierr
+   COMPLEX, DIMENSION(Nf,Nf,Nt)  ::  rho1
+   COMPLEX, DIMENSION(Nf,Nf)  ::  rho0, H0
 !------- Output ---------------------------------------------
-   OPEN(UNIT=12,FILE=   'Eigenval.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=12,FILE=   'OccupationOfStates.dtx'      ,STATUS='NEW')
 !------------------------------------------------------------
    ierr = 0
-   ALLOCATE(H0(Nf,Nf),V(Nf,Nf),Hmat(Nf,Nf), STAT=ierr)
-!------------------------------------------------------------
-! First we define H0 and V.
+ !  ALLOCATE(H0(Nf,Nf),rho0(Nf,Nf),rho1(Nf,Nf,Nt), STAT=ierr)
+!----Initial matrix definitions------------------------------
 
-   V = Czero                                 ! Set V as the zero matrix
-   DO j=1, Nf                                ! Set V as x/a in the basis of H0
-      DO i=1, Nf
-         IF(ABS(j-i) == 1) V(i,j) = SQRT(FLOAT(i+j+1))*0.5
+   H0 = Czero
+   DO i=1,Nf
+      H0(i,i)=i-0.5
+   END DO
+   rho0 = Czero
+   rho0(1,1) = 1
+   rho1 = Czero
+   rho1(:,:,1) = rho0
+
+!----First we define rho1(:,:,1), the first time step--------
+  
+   DO i=1,10                        ! Iterations
+      rho1(:,:,1) = rho0(:,:) + (lambda(rho0(:,:)) + lambda(rho1(:,:,1)))
+   END DO
+
+!----Then we define rho1(:,:,t) for the rest of time---------
+
+   DO t=2,Nt                        ! Time grid
+      DO i=1,10                     ! Iterations
+        rho1(:,:,t) = rho1(:,:,t-1) + (lambda(rho1(:,:,t-1)) + lambda(rho1(:,:,t)))
       END DO
    END DO
-   V = matmul(V,V)                           ! Take V to the second power
-   V = matmul(V,V)                           ! Take V to the fourth power
 
-   H0 = Czero                                ! Set H0 as the zero matrix
-   DO j = 1, Nf                              ! Define the entries of H0 
-     DO i = 1, Nf
-       IF(j == i) H0(i,j) = i-0.5
-     END DO
-   END DO
-
-!------------------------------------------------------------
-! Here we calculate the eigenvalues for different
-! values of lambda.
-
-   DO n=1, 6                                                      ! n will be the number of 
-                                                                  ! eigenvalues we print for each lambda
-      DO lambda=0, 120
-         Hmat = H0 + V*0.01*lambda                                ! Define H for this lambda 
-
-         ALLOCATE(Eigval(Nf),Eigvect(Nf,Nf), STAT=ierr)
-         CALL HEEVR(Hmat,Eigval,UPLO,Eigvect)                     ! Subroutine from MKL for finding
-                                                                  ! eigenvalues and vectors, input is a 
-                                                                  ! lower or upper triangular
-                                                                  
-         WRITE(12,FMT='(E15.8,2X,E15.8)') 0.01*lambda, Eigval(n)  ! Eigenvalues printed (along with
-                                                                  ! the value of lambda)
-         DEALLOCATE(Eigval,Eigvect, STAT=ierr)
+!----And finally we write our result to the output----------
+   DO i=1,4                                               ! The number of states printed
+      WRITE(12,FMT='(I2,2X,(E15.8,E15.8))') 0, rho0(i,i)       ! The initial occupation of the state 
+      DO t=1,Nt
+         WRITE(12,FMT='(I2,2X,(E15.8,E15.8))') t, rho1(i,i,t)  ! The occupation of the state at time t
       END DO
    END DO
-   
-   DEALLOCATE(H0,V,Hmat, STAT=ierr)
 
+!   DEALLOCATE(rho0,rho1, STAT=ierr) 
+
+!-----------------------------------------------------------
+CONTAINS
+FUNCTION lambda(rho) 
+   COMPLEX, DIMENSION(Nf,Nf)         :: comm
+   COMPLEX, DIMENSION(Nf,Nf)         :: lambda
+   COMPLEX, DIMENSION(:,:), INTENT(IN)             :: rho(:,:)
+   comm = matmul(H0,rho)-matmul(rho,H0)
+   lambda = -ci*comm 
+END FUNCTION 
 !-----------------------------------------------------------
 END PROGRAM Adal

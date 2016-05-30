@@ -21,7 +21,9 @@
 
     REAL(KIND=dp),        ALLOCATABLE, DIMENSION(:)      :: Eigval
     
-    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: H0, Ht, Hmat, rho0, rho1, rho2
+!    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: H0, rho0
+    
+!    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:,:)    :: rho1
    
 
 !--------------------------------------------------------------------------
