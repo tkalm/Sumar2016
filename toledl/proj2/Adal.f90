@@ -17,55 +17,59 @@
 
    IMPLICIT NONE
 !------- Local variables ------------------------------------
-   INTEGER         :: t, i, ierr
-   COMPLEX, DIMENSION(Nf,Nf,0:Nt)  ::  rho1
-   COMPLEX, DIMENSION(Nf,Nf)  ::  rho0, H0, V
+   INTEGER                           ::  i, j 
+   COMPLEX, DIMENSION(Nf,Nf,0:Nt)    ::  rho
+   COMPLEX, DIMENSION(Nf,Nf)         ::  H, Ht
 !------- Output ---------------------------------------------
    OPEN(UNIT=12,FILE=   'OccupationOfStates.dtx'      ,STATUS='NEW')
-!----Initial matrix definitions------------------------------
-   rho0 = Czero
-   rho0(1,1) = 1
-   rho1 = Czero
-   rho1(:,:,1) = rho0
+!------------------------------------------------------------
+! We begin be defining the hamiltonian and the initial values
+! of the density matrix rho. 
+
+   rho(:,:,:) = Czero
+   rho(1,1,0) = 1               ! Initial value of rho
    
-   V = Czero                                 ! Set V as the zero matrix
-   DO t=1, Nf                                ! Set V as a* + a in energy basis 
-      DO i=1, Nf
-         IF(ABS(t-i) == 1) V(i,t) = SQRT(FLOAT((t+i-1)/2))
-      END DO
-   END DO
-   H0 = Czero                                ! Set H0 as the zero matrix
-   DO t = 1, Nf                              ! Define the entries of H0 
+   H = Czero                    ! We define H as H0 and define Ht and then take the sum
+   Ht = Czero
+   DO j = 1, Nf 
      DO i = 1, Nf
-       IF(t == i) H0(i,t) = i-0.5
+       IF(j == i) H(i,j) = i-0.5
+       IF(ABS(j-i) == 1) Ht(i,j) = SQRT(FLOAT((j+i-1)/2))
      END DO
    END DO
-   H0=H0+V
-!----First we define rho1(:,:,1), the first time step--------
-   DO i=1,10                        ! Iterations
-      rho1(:,:,1) = rho0(:,:) + 0.01208897*(lambda(rho0(:,:)) + lambda(rho1(:,:,1)))
-   END DO
-!----Then we define rho1(:,:,t) for the rest of time---------
-   DO t=2,Nt                        ! Time grid
+   H=H+Ht
+
+!------------------------------------------------------------
+! Then we calculate the entries of rho for other values of time
+! by iteration of our approximation of the L-vN equation. 
+
+   DO j=1,Nt                        ! Time grid
       DO i=1,10                     ! Iterations
-        rho1(:,:,t) = rho1(:,:,t-1)
-        rho1(:,:,t) = rho1(:,:,t-1) + 0.01208897*(lambda(rho1(:,:,t-1)) + lambda(rho1(:,:,t)))
+        rho(:,:,j) = rho(:,:,j-1)
+        rho(:,:,j) = rho(:,:,j-1) + 0.01208897*(lambda(rho(:,:,j-1)) + lambda(rho(:,:,j)))
       END DO
    END DO
-!----And finally we write our result to the output----------
+
+!------------------------------------------------------------
+! And finally we write our results to a file
+
    DO i=1,5                                                  ! The number of states printed
-      WRITE(12,FMT='(I3,2X,E15.8)') 0, REAL(rho0(i,i))       ! The initial occupation of the state 
-      DO t=1,Nt
-         WRITE(12,FMT='(I3,2X,E15.8)') t, REAL(rho1(i,i,t))  ! The occupation of the state at time t
+      DO j=0,Nt
+         WRITE(12,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.1, REAL(rho(i,i,j))  ! The occupation of the state at time t
       END DO
    END DO
+
 !-----------------------------------------------------------
+! The function lambda is the superoperator that calculates
+! the commutator of H and rho in the L-vN eq. 
+
    CONTAINS
    FUNCTION lambda(mat) 
       COMPLEX, DIMENSION(Nf,Nf)                :: lambda
       COMPLEX, DIMENSION(:,:), INTENT(IN)      :: mat(:,:)
-      lambda = matmul(H0,mat)-matmul(mat,H0)
+      lambda = matmul(H,mat)-matmul(mat,H)
       lambda = -ci*lambda 
-   END FUNCTION 
+   END FUNCTION
+
 !-----------------------------------------------------------
 END PROGRAM Adal
