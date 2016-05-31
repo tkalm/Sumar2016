@@ -21,21 +21,27 @@
    INTEGER         :: i, j, ierr, n
    REAL (KIND=dp)  :: lambda
 !------- Output ---------------------------------------------
-   OPEN(UNIT=12,FILE=   'Eigenval.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=11,FILE=   'State0.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=12,FILE=   'State1.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=13,FILE=   'State2.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=14,FILE=   'State3.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=15,FILE=   'State4.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=16,FILE=   'State5.dtx'      ,STATUS='NEW')
 !------------------------------------------------------------
    ierr = 0
    ALLOCATE(H0(Nf,Nf),V(Nf,Nf),Hmat(Nf,Nf), STAT=ierr)
 !------------------------------------------------------------
 ! First we define H0 and V.
 
-   V = Czero                                 ! Set V as the zero matrix
-   DO j=1, Nf                                ! Set V as x/a in the basis of H0
-      DO i=1, Nf
-         IF(ABS(j-i) == 1) V(i,j) = SQRT(FLOAT(i+j+1))*0.5
-      END DO
+   V = Czero
+   DO j = 1, Nf 
+     DO i = 1, Nf
+       IF(ABS(j-i) == 1) V(i,j) = SQRT(FLOAT((j+i-1)/2))
+     END DO
    END DO
-   V = matmul(V,V)                           ! Take V to the second power
-   V = matmul(V,V)                           ! Take V to the fourth power
+   V = (1/SQRT(FLOAT(2)))*V
+   V = matmul(V,V)
+   V = matmul(V,V)
 
    H0 = Czero                                ! Set H0 as the zero matrix
    DO j = 1, Nf                              ! Define the entries of H0 
@@ -53,7 +59,7 @@
          Hmat = (H0 + V*lambda)                                   ! Define H for this lambda 
          ALLOCATE(Eigval(Nf),Eigvect(Nf,Nf), STAT=ierr)
          CALL HEEVR(Hmat,Eigval,UPLO,Eigvect)                     ! Finds the eigenvalues (and vectors) 
-         WRITE(12,FMT='(E15.8,2X,E15.8)') lambda, Eigval(n)       ! Eigenvalues printed (along with lambda)
+         WRITE(10+n,FMT='(E15.8,2X,E15.8)') lambda, Eigval(n)       ! Eigenvalues printed (along with lambda)
          DEALLOCATE(Eigval,Eigvect, STAT=ierr)
       END DO
    END DO

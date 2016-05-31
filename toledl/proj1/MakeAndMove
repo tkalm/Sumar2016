@@ -4,10 +4,10 @@
 # This is my editing directory
 FirstSource=~/Sumar2016/toledl/proj1/
 # This is the current directory, where I compile and run the programs on Tesla1
-FirstDest=~/Sumar2016/toledl/proj1/keyrslur-proj1/
+FirstDest=~/Sumar2016/toledl/proj1/keyrslur/
 # Here I run the makefile that compiles the programs
 make
-mv Adal keyrslur-proj1 
-cd keyrslur-proj1 
+mv Adal keyrslur 
+cd keyrslur 
 ./Adal
 #------------------------------------
