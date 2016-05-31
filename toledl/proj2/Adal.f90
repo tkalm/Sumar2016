@@ -18,17 +18,17 @@
    IMPLICIT NONE
 !------- Local variables ------------------------------------
    INTEGER                           ::  i, j 
-   COMPLEX, DIMENSION(Nf,Nf,0:Nt)    ::  rho
-   COMPLEX, DIMENSION(Nf,Nf)         ::  H, Ht
+   COMPLEX, DIMENSION(Nf,Nf)         ::  H, Ht, rho, rhon
 !------- Output ---------------------------------------------
-   OPEN(UNIT=12,FILE=   'OccupationOfStates.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=11,FILE=   'State0.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=12,FILE=   'State1.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=13,FILE=   'State2.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=14,FILE=   'State3.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=15,FILE=   'State4.dtx'      ,STATUS='NEW')
 !------------------------------------------------------------
 ! We begin be defining the hamiltonian and the initial values
 ! of the density matrix rho. 
 
-   rho(:,:,:) = Czero
-   rho(1,1,0) = 1               ! Initial value of rho
-   
    H = Czero                    ! We define H as H0 and define Ht and then take the sum
    Ht = Czero
    DO j = 1, Nf 
@@ -39,23 +39,26 @@
    END DO
    H=H+Ht
 
-!------------------------------------------------------------
-! Then we calculate the entries of rho for other values of time
-! by iteration of our approximation of the L-vN equation. 
-
-   DO j=1,Nt                        ! Time grid
-      DO i=1,10                     ! Iterations
-        rho(:,:,j) = rho(:,:,j-1)
-        rho(:,:,j) = rho(:,:,j-1) + 0.01208897*(lambda(rho(:,:,j-1)) + lambda(rho(:,:,j)))
-      END DO
+   rho(:,:) = Czero
+   rho(1,1) = 1                 ! Initial value of rho
+   rhon = rho
+! We begin by printing the initial state
+   DO i=1,5                                                  ! The number of states printed
+      WRITE(10+i,FMT='(E15.8,2X,E15.8)') 0, REAL(rho(i,i))   ! The occupation of the state at time t=0
    END DO
 
 !------------------------------------------------------------
-! And finally we write our results to a file
+! Then we calculate and print the entries of rho for other 
+! values of time by iteration of our approximation 
+! of the L-vN equation. 
 
-   DO i=1,5                                                  ! The number of states printed
-      DO j=0,Nt
-         WRITE(12,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.1, REAL(rho(i,i,j))  ! The occupation of the state at time t
+   DO j=1,Nt                        ! Time grid
+      DO i=1,10                     ! Iterations
+        rhon(:,:) = rho(:,:) + 0.006044485*(lambda(rho(:,:)) + lambda(rhon(:,:)))
+      END DO
+      rho=rhon
+      DO i=1,5                                                             ! The number of states printed
+         WRITE(10+i,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.05, REAL(rho(i,i))   ! The occupation of the state at time t=0
       END DO
    END DO
 

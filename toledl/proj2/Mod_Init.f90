@@ -10,8 +10,8 @@
 
     INTEGER,          PARAMETER     :: NumThreads     = 2 !4
 
-    INTEGER,          PARAMETER     :: Nf  = 48 !128    ! 128
-    INTEGER,          PARAMETER     :: Nt  = 200 !128    ! 128
+    INTEGER,          PARAMETER     :: Nf  = 128 !128    ! 128
+    INTEGER,          PARAMETER     :: Nt  = 1200 !128    ! 128
 
 
 !----------------------------------------------------------------------------
