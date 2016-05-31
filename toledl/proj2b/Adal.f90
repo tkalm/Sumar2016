@@ -1,11 +1,7 @@
    PROGRAM Adal
 !------------------------------------------------------------
-! This program calculates the occupation over time  of chosen 
-! states of a system with a hamiltonian H0 + V(t) where H0 is 
-! the harmonic oscillator and V(t) is 0 for t<0 but (a+a*) 
-! for t>=0 where a is the ladder operator. 
-! This is done by a Crank-Nicolson approximation of the 
-! Liouville-von Neumann equation. 
+! This program calculates the expectation values <x> and 
+! <x*x> for the system H = H0 + Ht (from project 2a)
 !------------------------------------------------------------
    USE omp_lib               ! For OpenMP parallel processing
    USE Mod_Precision         ! Module for setting double precision
@@ -18,17 +14,14 @@
    IMPLICIT NONE
 !------- Local variables ------------------------------------
    INTEGER                           ::  i, j 
-   COMPLEX, DIMENSION(Nf,Nf)         ::  H, Ht, rho, rhon1, rhon2
+   COMPLEX, DIMENSION(Nf,Nf)         ::  H, Ht, rho, rhon1, rhon2, xmat, x2mat
    REAL                              ::  hbaromega, delt, alpha
 !------- Output ---------------------------------------------
-   OPEN(UNIT=10,FILE=   'trace.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=11,FILE=   'State0.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=12,FILE=   'State1.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=13,FILE=   'State2.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=14,FILE=   'State3.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=15,FILE=   'State4.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=10,FILE=   'exp(x).dtx'        ,STATUS='NEW')
+   OPEN(UNIT=11,FILE=   'exp(x*x).dtx'      ,STATUS='NEW')
 !------------------------------------------------------------
-! We begin be defining the hamiltonian and the initial values
+! We begin be defining the hamiltonian, the matrix for the x
+! operator (in the energy basis of H0) and the initial values
 ! of the density matrix rho, along with the energy and timescale. 
 
    H = Czero                    ! We define H as H0 and define Ht and then take the sum
@@ -44,6 +37,11 @@
    rho(:,:) = Czero
    rho(1,1) = 1                 ! Initial value of rho
    rhon1 = rho
+
+
+   xmat = Ht*                                 ! Set V as the zero matrix
+   V = matmul(V,V)                           ! Take V to the second power
+
 ! We begin by printing the initial state
    DO i=1,5                                                  ! The number of states printed
       WRITE(10+i,FMT='(E15.8,2X,E15.8)') 0, REAL(rho(i,i))   ! The occupation of states at time t=0
