@@ -17,8 +17,8 @@
    COMPLEX, DIMENSION(Nf,Nf)         ::  H, Ht, rho, rhon1, rhon2, xmat, x2mat
    REAL                              ::  hbaromega, delt, alpha
 !------- Output ---------------------------------------------
-   OPEN(UNIT=10,FILE=   'exp(x).dtx'        ,STATUS='NEW')
-   OPEN(UNIT=11,FILE=   'exp(x*x).dtx'      ,STATUS='NEW')
+   OPEN(UNIT=11,FILE=   'exp(x).dtx'        ,STATUS='NEW')
+   OPEN(UNIT=12,FILE=   'exp(x*x).dtx'      ,STATUS='NEW')
 !------------------------------------------------------------
 ! We begin be defining the hamiltonian, the matrix for the x
 ! operator (in the energy basis of H0) and the initial values
@@ -39,22 +39,18 @@
    rhon1 = rho
 
 
-   xmat = Ht*                                 ! Set V as the zero matrix
-   V = matmul(V,V)                           ! Take V to the second power
+   xmat = (1/SQRT(FLOAT(2)))*Ht
+   x2mat = matmul(xmat,xmat)
 
-! We begin by printing the initial state
-   DO i=1,5                                                  ! The number of states printed
-      WRITE(10+i,FMT='(E15.8,2X,E15.8)') 0, REAL(rho(i,i))   ! The occupation of states at time t=0
-   END DO
-   WRITE(10,FMT='(E15.8,2X,E15.8)') 0, REAL(tr(rho))   ! The trace of rho at time t=0
+! We begin by printing the initial expectation values
+   WRITE(11,FMT='(E15.8,2X,E15.8)') 0, REAL(tr(matmul(rho,xmat)))    ! The expectation of x/a at time t=0 
+   WRITE(12,FMT='(E15.8,2X,E15.8)') 0, REAL(tr(matmul(rho,x2mat)))   ! The expectation of (x/a)*(x/a) at time t=0
 
    hbaromega = 1E-3                  ! Let hbar*omega be 1 meV
    delt = 1E-16                      ! Let delta t be 1/1000th of a picosecond = 1 femtosecond
    alpha = hbaromega*delt/(2*hbar)   ! The constant in our equation below
 !------------------------------------------------------------
 ! Then we calculate and print the entries of rho for other 
-! values of time by iteration of our approximation 
-! of the L-vN equation. 
 
    DO j=1,Nt                        ! Time grid
       DO                            ! Iterations
@@ -63,10 +59,8 @@
         rhon1 = rhon2
       END DO
       rho=rhon2
-      DO i=1,5                                                               ! The number of states printed
-         WRITE(10+i,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.0001, REAL(rho(i,i))   ! The occupation of states at time t=j
-      END DO
-      WRITE(10,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.0001, REAL(tr(rho))    ! The trace of rho at time t=j
+      WRITE(11,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.0001, REAL(tr(matmul(rho,xmat)))    ! The expectation of x/a at time t=0 
+      WRITE(12,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.0001, REAL(tr(matmul(rho,x2mat)))   ! The expectation of (x/a)*(x/a) at time t=0
    END DO
 
 !-----------------------------------------------------------
