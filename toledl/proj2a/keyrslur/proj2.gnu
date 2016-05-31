@@ -7,7 +7,7 @@ set title "Time evolution of the occupation of the five lowest states of H = H_{
 set size 2,1
 
 set terminal postscript portrait enhanced color solid defaultplex "Helvetica" 14
-set output 'graphproject2a.eps'
+set output 'graphproj2a.eps'
 
 plot "State0.dtx" with lines lt rgb "red" title "|0>",\
      "State1.dtx" with lines lt rgb "green" title "|1>",\
