@@ -11,7 +11,7 @@
     INTEGER,          PARAMETER     :: NumThreads     = 2 !4
 
     INTEGER,          PARAMETER     :: Nf  = 32 !128    ! 128
-    INTEGER,          PARAMETER     :: Nt  = 600000 !128    ! 128
+    INTEGER,          PARAMETER     :: Nt  = 5000000 !128    ! 128
 
 
 !----------------------------------------------------------------------------
