@@ -54,17 +54,17 @@
 !------------------------------------------------------------
 ! Calculate and print entries of rho for t>0 by iteration 
 ! of the Crank-Nicolson approx. the of  L-vN equation. 
-   DO j=1,Nt                                                                  ! Time grid
+   DO j=1,Nt/delt                                                             ! Time grid
       DO                                                                      ! Iterations
-        rhon2(:,:) = rho(:,:) + alpha*(lambda(rho(:,:)) + lambda(rhon1(:,:)))
+        rhon2 = rho + alpha*(lambda(rho) + lambda(rhon1))
         IF(err(rhon1,rhon2)<1E-4) EXIT
         rhon1 = rhon2
       END DO
       rho=rhon2
       DO i=1,5                                                                ! The number of states printed
-        WRITE(10+i,FMT='(E15.8,2X,E15.8)') FLOAT(j)*delt, REAL(rho(i,i))   ! The occupation of states at time t=j
+        WRITE(10+i,FMT='(E15.8,2X,E15.8)') FLOAT(j)*delt, REAL(rho(i,i))      ! The occupation of states at time t=j
       END DO
-      WRITE(10,FMT='(E15.8,2X,E15.8)') FLOAT(j)*delt, REAL(tr(rho))         ! The trace of rho at time t=j
+      WRITE(10,FMT='(E15.8,2X,E15.8)') FLOAT(j)*delt, REAL(tr(rho))           ! The trace of rho at time t=j
    END DO
 !-----------------------------------------------------------
 ! Functions used 
