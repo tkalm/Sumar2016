@@ -26,12 +26,11 @@
    DO j = 1, Nf 
      DO i = 1, Nf
        IF(j == i) H(i,j) = i-0.5
-       IF(ABS(j-i) == 1) THEN 
-          H(i,j) = SQRT(FLOAT((j+i-1)/2))
-          xmat = H(i,j)/SQRT(FLOAT(2))
-       END IF
+       IF(ABS(j-i) == 1) H(i,j) = SQRT(FLOAT((i+j-1)/2))
+       IF(ABS(j-i) == 1) xmat(i,j) = SQRT(FLOAT((i+j-1)/2))
      END DO
    END DO
+   xmat = xmat/SQRT(FLOAT(2))
    x2mat = matmul(xmat,xmat)
    rho = Czero
    rho(1,1) = 1                                                      ! Initial value of rho
@@ -46,7 +45,7 @@
    alpha      = hbaromega*delt/(2*hbar)                              ! The constant in our equation below
 !------------------------------------------------------------
 ! Calculate and print the expectation values for t>0 
-   DO j=1,Nt*delt                                                    ! Time grid
+   DO j=1,Nt/delt                                                    ! Time grid
       DO                                                             ! Iterations
         rhon2 = rho + alpha*(lambda(rho) + lambda(rhon1))
         IF(err(rhon1,rhon2)<1E-4) EXIT
