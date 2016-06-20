@@ -10,8 +10,8 @@
 
     INTEGER,          PARAMETER     :: NumThreads     = 2 !4
 
-    INTEGER,          PARAMETER     :: Nf  = 32 !128    ! 128
-    INTEGER,          PARAMETER     :: Nt  = 600000 !128    ! 128
+    INTEGER,          PARAMETER     :: Nf  = 32 
+    INTEGER,          PARAMETER     :: Nt  = 60*1E3 
 
 
 !----------------------------------------------------------------------------
@@ -19,7 +19,7 @@
     REAL(KIND=dp),     PARAMETER    :: pi   = 3.14159265358979324_dp
     REAL(KIND=dp),     PARAMETER    :: pi2i = 1.0_dp/(2.0_dp*pi)
     REAL(KIND=dp),     PARAMETER    :: pid2 = pi/2.0_dp
-    REAL(KIND=dp),     PARAMETER    :: hbar = 6.582119514E-16      ! In units of eV*s 
+    REAL(KIND=dp),     PARAMETER    :: hbar = 6.582119514E-4      ! In units of eV*ps 
 
     COMPLEX(KIND=dp),  PARAMETER    :: ci    = CMPLX(0.0_dp, 1.0_dp)
     COMPLEX(KIND=dp),  PARAMETER    :: CUnit = CMPLX(1.0_dp, 0.0_dp)

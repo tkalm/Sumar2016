@@ -48,46 +48,40 @@
 
 ! Define the value of hbar*omega in our system, the timestep
 ! used and a constant that appears in our equation. 
-   hbaromega = 1E-3                                           ! Let hbar*omega be 1 meV
-   delt = 1E-16                                               ! Let delta t be 1/1000th of a picosecond = 1 femtosecond
-   alpha = hbaromega*delt/(2*hbar)                            ! The constant in our equation below
+   hbaromega  = 1E-3                                          ! hbar*omega in eV
+   delt       = 1E-3                                          ! delta t in ps 
+   alpha      = hbaromega*delt/(2*hbar)                       ! The constant in our equation below
 !------------------------------------------------------------
 ! Calculate and print entries of rho for t>0 by iteration 
 ! of the Crank-Nicolson approx. the of  L-vN equation. 
-
    DO j=1,Nt                                                                  ! Time grid
       DO                                                                      ! Iterations
         rhon2(:,:) = rho(:,:) + alpha*(lambda(rho(:,:)) + lambda(rhon1(:,:)))
-        IF(err(rhon1,rhon2)<1E-7) EXIT
+        IF(err(rhon1,rhon2)<1E-4) EXIT
         rhon1 = rhon2
       END DO
       rho=rhon2
       DO i=1,5                                                                ! The number of states printed
-         WRITE(10+i,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.0001, REAL(rho(i,i))   ! The occupation of states at time t=j
+        WRITE(10+i,FMT='(E15.8,2X,E15.8)') FLOAT(j)*delt, REAL(rho(i,i))   ! The occupation of states at time t=j
       END DO
-      WRITE(10,FMT='(E15.8,2X,E15.8)') FLOAT(j)*0.0001, REAL(tr(rho))         ! The trace of rho at time t=j
+      WRITE(10,FMT='(E15.8,2X,E15.8)') FLOAT(j)*delt, REAL(tr(rho))         ! The trace of rho at time t=j
    END DO
-
 !-----------------------------------------------------------
 ! Functions used 
-
    CONTAINS
-   FUNCTION lambda(mat)                                 ! Calculates the commutator in L-vN 
+   FUNCTION lambda(mat)                                       ! Calculates the commutator in L-vN 
       COMPLEX, DIMENSION(Nf,Nf)                :: lambda
       COMPLEX, DIMENSION(:,:), INTENT(IN)      :: mat(:,:)
-      lambda = matmul(H,mat)-matmul(mat,H)
-      lambda = -ci*lambda 
+      lambda = -ci*(matmul(H,mat)-matmul(mat,H))
    END FUNCTION lambda
 
-   FUNCTION err(x1,x2)                                   ! Calculates the error
-      INTEGER                             :: m
+   FUNCTION err(x1,x2)                                        ! Calculates the error
       REAL                                :: err 
       COMPLEX, DIMENSION(:,:), INTENT(IN) :: x1,x2
-      err = Czero 
-      err = ABS(SUM(x2-x1))
+      err = SQRT(ABS(SUM(x2-x1)))
    END FUNCTION err
 
-   FUNCTION tr(matrix)                                   ! Calculates the trace of a matrix
+   FUNCTION tr(matrix)                                        ! Calculates the trace of a matrix
       INTEGER                             :: m
       COMPLEX                             :: tr
       COMPLEX, DIMENSION(:,:), INTENT(IN) :: matrix 
@@ -96,6 +90,5 @@
          tr = tr+matrix(m,m)
       END DO
    END FUNCTION tr
-
 !-----------------------------------------------------------
 END PROGRAM Adal
