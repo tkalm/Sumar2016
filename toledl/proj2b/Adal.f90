@@ -41,7 +41,7 @@
 ! Define the value of hbar*omega in our system, the timestep
 ! used and the constant that appears in our equation. 
    hbaromega  = 1E-3                                                 ! hbar*omega in eV
-   delt       = 1E-3                                                 ! delta t in ps 
+   delt       = 1E-4                                                 ! delta t in ps 
    alpha      = hbaromega*delt/(2*hbar)                              ! The constant in our equation below
 !------------------------------------------------------------
 ! Calculate and print the expectation values for t>0 
