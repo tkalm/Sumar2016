@@ -41,14 +41,14 @@
 ! Define the value of hbar*omega in our system, the timestep
 ! used and the constant that appears in our equation. 
    hbaromega  = 1E-3                                                 ! hbar*omega in eV
-   delt       = 1E-4                                                 ! delta t in ps 
+   delt       = 1E-3                                                 ! delta t in ps 
    alpha      = hbaromega*delt/(2*hbar)                              ! The constant in our equation below
 !------------------------------------------------------------
 ! Calculate and print the expectation values for t>0 
    DO j=1,Nt/delt                                                    ! Time grid
       DO                                                             ! Iterations
         rhon2 = rho + alpha*(lambda(rho) + lambda(rhon1))
-        IF(err(rhon1,rhon2)<1E-4) EXIT
+        IF(err(rhon1,rhon2)<1E-1) EXIT
         rhon1 = rhon2
       END DO
       rho=rhon2
