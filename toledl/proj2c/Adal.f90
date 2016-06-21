@@ -1,7 +1,7 @@
    PROGRAM Adal
 !------------------------------------------------------------
 ! This program does the same thing as project 2a except 
-! this time we add dissipation to our hamiltonian. 
+! this time we add dissipation to our model. 
 !------------------------------------------------------------
    USE omp_lib               ! For OpenMP parallel processing
    USE Mod_Precision         ! Module for setting double precision
@@ -24,7 +24,7 @@
    OPEN(UNIT=14,FILE=   'State3.dtx'      ,STATUS='NEW')
    OPEN(UNIT=15,FILE=   'State4.dtx'      ,STATUS='NEW')
 !------------------------------------------------------------
-! Define hamiltonian, initial rho and energy and timescale. 
+! Define hamiltonian, initial rho and energy and timestep. 
    H = Czero
    amat = Czero
    admat = Czero
@@ -40,7 +40,7 @@
    H = H + Ht
    Nmat = matmul(admat,amat)
    
-   rho(:,:) = Czero
+   rho = Czero
    rho(1,1) = 1                                                 ! Initial value of rho
    rhon1 = rho
 ! We begin by printing the initial state
@@ -49,10 +49,11 @@
    END DO
    WRITE(10,FMT="(E15.8,2X,E15.8)") 0, REAL(tr(rho))            ! The trace of rho at time t=0
 
-   hbaromega = 1E-3                                             ! hbar*omega in eV
-   delt = 1E-3                                                  ! delta t in ps 
+! Define constants used below
+   hbaromega = 1E-3                                             ! Our energy scale, hbar*omega in eV
+   delt = 1E-3                                                  ! The timestep of our approximation in ps 
    alpha = hbaromega*delt/(2*hbar)                              ! The constant in our equation below (hbar is in eV*ps)
-   kappa = (1E-1)/2                                             ! The strength of dissipation (kappa/2)
+   kappa = (1E-1)/2                                             ! The strength of dissipation (kappa/2) (appears in lambda)
 !------------------------------------------------------------
 ! Calculate and print entries of rho for t>0 by iteration 
 ! of the Crank-Nicolson approx. the of  L-vN equation. 
