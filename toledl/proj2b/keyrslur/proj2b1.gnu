@@ -9,4 +9,4 @@ set size 2,1
 
 set terminal postscript portrait enhanced color solid defaultplex "Helvetica" 14
 
-plot "exp(x).dtx" with lines lt rgb "green" notitle
+plot "expx.dtx" with lines lt rgb "green" notitle
