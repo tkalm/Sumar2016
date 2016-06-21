@@ -21,34 +21,37 @@
    OPEN(UNIT=12,FILE=   'expxx.dtx'       ,STATUS='NEW')
 !------------------------------------------------------------
 ! Define H, x, x*x and the initial values of rho. 
-   H = Czero                                                         ! Define H
+   H = Czero                                                         
    xmat = Czero
-   DO j = 1, Nf 
+   DO j = 1, Nf                                                      ! Define H and x 
      DO i = 1, Nf
        IF(j == i) H(i,j) = i-0.5
-       IF(ABS(j-i) == 1) H(i,j) = SQRT(FLOAT((i+j-1)/2))
-       IF(ABS(j-i) == 1) xmat(i,j) = SQRT(FLOAT((i+j-1)/2))
+       IF(ABS(j-i) == 1) THEN
+          H(i,j) = SQRT(FLOAT((i+j-1)/2))
+          xmat(i,j) = H(i,j)/SQRT(FLOAT(2))
+       END IF
      END DO
    END DO
-   xmat = xmat/SQRT(FLOAT(2))
-   x2mat = matmul(xmat,xmat)
+   x2mat = matmul(xmat,xmat)                                         ! Define x*x
    rho = Czero
    rho(1,1) = 1                                                      ! Initial value of rho
-   rhon1 = rho
+   rhon1 = rho                                                       ! Initial step of iteration
+   
 ! Print the initial expectation values
    WRITE(11,FMT='(E15.8,2X,E15.8)') 0, REAL(tr(matmul(rho,xmat)))    ! The expectation of x/a at time t=0 
    WRITE(12,FMT='(E15.8,2X,E15.8)') 0, REAL(tr(matmul(rho,x2mat)))   ! The expectation of (x/a)*(x/a) at time t=0
+
 ! Define the value of hbar*omega in our system, the timestep
 ! used and the constant that appears in our equation. 
    hbaromega  = 1E-3                                                 ! hbar*omega in eV
    delt       = 1E-3                                                 ! delta t in ps 
-   alpha      = hbaromega*delt/(2*hbar)                              ! The constant in our equation below
+   alpha      = hbaromega*delt/(2*hbar)                              ! The constant in our equation below (hbar units: eV*ps)
 !------------------------------------------------------------
 ! Calculate and print the expectation values for t>0 
    DO j=1,Nt/delt                                                    ! Time grid
-      DO                                                             ! Iterations
+      DO                                                             ! Iteration
         rhon2 = rho + alpha*(lambda(rho) + lambda(rhon1))
-        IF(err(rhon1,rhon2)<1E-1) EXIT
+        IF(err(rhon1,rhon2)<1E-4) EXIT
         rhon1 = rhon2
       END DO
       rho=rhon2
