@@ -13,4 +13,5 @@ plot "State0.dtx" with lines lt rgb "red" title "|0>",\
      "State1.dtx" with lines lt rgb "green" title "|1>",\
      "State2.dtx" with lines lt rgb "blue" title "|2>",\
      "State3.dtx" with lines lt rgb "purple" title "|3>",\
+     "trace.dtx" with lines lt rgb "black" title "trace",\
      "State4.dtx" with lines lt rgb "cyan" title "|4>"
