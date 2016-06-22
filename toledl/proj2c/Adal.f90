@@ -14,10 +14,10 @@
    IMPLICIT NONE
 !------- Local variables ------------------------------------
    INTEGER                           ::  i, j 
-   COMPLEX, DIMENSION(Nf,Nf)         ::  H, Ht, rho, rhon1, rhon2, amat, admat, Nmat
+   COMPLEX, DIMENSION(Nf,Nf)         ::  H, rho, rhon1, rhon2, amat, admat, Nmat
    REAL                              ::  hbaromega, delt, alpha, kappa, Odo
 !------- Output ---------------------------------------------
-   OPEN(UNIT=10,FILE=   'trace.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=10,FILE=   'trace.dtx'       ,STATUS='NEW')
    OPEN(UNIT=11,FILE=   'State0.dtx'      ,STATUS='NEW')
    OPEN(UNIT=12,FILE=   'State1.dtx'      ,STATUS='NEW')
    OPEN(UNIT=13,FILE=   'State2.dtx'      ,STATUS='NEW')
@@ -32,18 +32,16 @@
       DO i = 1, Nf
          IF(j == i+1) amat(i,j) = SQRT(FLOAT(i))
          IF(i == j+1) admat(i,j) = SQRT(FLOAT(j))
-         IF(j == i) H(i,j) = i-0.5
       END DO
    END DO
-   Odo = 0.4                                                    ! Omega (capital) divided by omega
-   Ht = Odo*(amat + admat) 
-   H = H + Ht
    Nmat = matmul(admat,amat)
+   Odo = 0.4                                                    ! Omega (capital) divided by omega
+   H = (Nmat + 0.5) + Odo*(amat + admat)                        ! (Nmat+0.5)=H_0, Odo*(amat+admat)=H(t) 
    
    rho = Czero
    rho(1,1) = 1                                                 ! Initial value of rho
    rhon1 = rho
-! We begin by printing the initial state
+! Print the initial state
    DO i=1,5                                                     ! The number of states printed
       WRITE(10+i,FMT='(E15.8,2X,E15.8)') 0, REAL(rho(i,i))      ! The occupation of states at time t=0
    END DO
@@ -73,7 +71,7 @@
 !-----------------------------------------------------------
 ! Functions used 
    CONTAINS
-   FUNCTION lambda(mat)                                         ! Calculates the commutator in L-vN 
+   FUNCTION lambda(mat)                                         ! The superoperator in our equation 
       COMPLEX, DIMENSION(Nf,Nf)                :: lambda
       COMPLEX, DIMENSION(:,:), INTENT(IN)      :: mat(:,:)
       lambda = -ci*(matmul(H,mat)-matmul(mat,H))- &  

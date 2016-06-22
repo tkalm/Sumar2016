@@ -1,6 +1,6 @@
 reset
-#set xrange [0:67]
-#set yrange [0:1.1]
+#set xrange [0:100]
+#set yrange [0:1]
 set xlabel "Time [ps]"
 set ylabel "Occupation"
 set title "Time evolution of the occupation of the five lowest states of H = H_{0} + H'(t) - Dissipation"
