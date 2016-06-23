@@ -1,7 +1,8 @@
    PROGRAM Adal
 !----------------------------------------------------------------------
-! This program does the same thing as project 2a except 
-! this time we add dissipation to our model. 
+! This program does the same thing as project 2a (calculates occupation
+! of states of the system H=H0+H'(t) for t>0 given the state at t=0) 
+! except this time dissipation is added to the model.
 !----------------------------------------------------------------------
    USE omp_lib               ! For OpenMP parallel processing
    USE Mod_Precision         ! Module for setting double precision
@@ -30,19 +31,19 @@
    admat = Czero
    DO j = 1, Nf
       DO i = 1, Nf
-         IF(j == i+1)  amat(i,j)  = SQRT(FLOAT(i))                     ! Lowering operator
-         IF(i == j+1)  admat(i,j) = SQRT(FLOAT(j))                     ! Raising operator
+         IF(j == i+1)  amat(i,j)  = SQRT(FLOAT(i))/SQRT(FLOAT(2))      ! Lowering operator
+         IF(i == j+1)  admat(i,j) = SQRT(FLOAT(j))/SQRT(FLOAT(2))      ! Raising operator
          IF(i == j)    H(i,j)     = i-0.5                              ! Hamiltonian of harmonic oscillator
       END DO
    END DO
-   Odo = 0.4                                                           ! Omega (capital) divided by omega
-   H = H + Odo*(amat + admat)                                          ! Add the external static electric field 
-   Nmat = matmul(admat,amat)
+   Odo        = 0.4                                                    ! Omega (capital) divided by omega
+   H          = H + Odo*(amat + admat)                                 ! Add the external static electric field 
+   Nmat       = matmul(admat,amat)                                     ! Defined for convenience (used in lambda)
 
 ! Initial state of rho   
-   rho = Czero
-   rho(1,1) = 1
-   rhon1 = rho                                                         ! Setup for time iteration
+   rho        = Czero
+   rho(1,1)   = 1
+   rhon1      = rho                                                    ! Setup for the iteration
 
 ! Print the initial state
    DO i=1,5                                                            ! The number of states printed
@@ -51,20 +52,21 @@
    WRITE(10,FMT="(E15.8,2X,E15.8)") 0, REAL(tr(rho))                   ! The trace of rho at time t=0
 
 ! Define constants used 
-   hbaromega = 1E-3                                                    ! Our energy scale, hbar*omega in eV
-   delt      = 1E-3                                                    ! The timestep of our approximation in ps 
-   alpha     = hbaromega*delt/(2*hbar)                                 ! The constant in our equation below (hbar is in eV*ps)
-   kappa     = (1E-1)/2                                                ! The strength of dissipation (kappa/2) (appears in lambda)
+   hbaromega  = 1E-3                                                   ! Our energy scale, hbar*omega in eV
+   delt       = 1E-3                                                   ! The timestep of our approximation in ps 
+   alpha      = hbaromega*delt/(2*hbar)                                ! The constant in our equation below (hbar is in eV*ps)
+   kappa      = (1E-1)/2                                               ! The strength of dissipation (kappa/2) (appears in lambda)
 !------- Calculation --------------------------------------------------
 ! Calculate rho for t>0 by iteration of the Crank-Nicolson 
 ! approximation of the of  L-vN equation.  
-   DO j=1,Nt/delt                                                      ! Time grid
+   DO j=1, Nt/delt                                                     ! Time grid
       DO                                                               ! Iterations
         rhon2 = rho + alpha*(lambda(rho) + lambda(rhon1))              ! Our approximation
-        IF(err(rhon1,rhon2)<Odo*1E-3) EXIT                             ! Exit loop when desired accuracy is achieved
+        IF(   err(rhon1,rhon2) < 1E-4   )  EXIT                        ! Exit loop when desired accuracy is achieved
         rhon1 = rhon2                                                  ! Setup for next iteration
       END DO
-      rho=rhon2                                                        ! Setup for next timestep
+      rho     = rhon2                                                  ! Setup for next timestep
+      rhon1   = rho                                                    ! Setup for next iteration
 
 ! Print the desired entries of rho at t = j*delt. 
       DO i=1,5                                                         ! The number of states printed
@@ -75,7 +77,7 @@
 !------ Functions used ------------------------------------------------
    CONTAINS
    FUNCTION lambda(mat)                                                ! The superoperator in our equation 
-      COMPLEX, DIMENSION(Nf,Nf)                :: lambda
+      COMPLEX, DIMENSION(Nf,Nf)                :: lambda, matad
       COMPLEX, DIMENSION(:,:), INTENT(IN)      :: mat(:,:)
       lambda = -ci*(matmul(H,mat)-matmul(mat,H))- &                    ! Commutator of hamiltonian and rho 
       kappa*(2*matmul(amat,matmul(mat,admat)) - &                      ! The dissipation terms

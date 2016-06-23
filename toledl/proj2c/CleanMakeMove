@@ -13,5 +13,5 @@ cd ..
 make
 mv Adal keyrslur
 cd keyrslur
-./Adal
+./Adal 
 #------------------------------------

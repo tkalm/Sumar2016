@@ -72,7 +72,7 @@
    FUNCTION lambda(mat)                                       ! Calculates the commutator in L-vN 
       COMPLEX, DIMENSION(Nf,Nf)                :: lambda
       COMPLEX, DIMENSION(:,:), INTENT(IN)      :: mat(:,:)
-      lambda = -ci*(matmul(H,mat)-matmul(mat,H))
+      lambda = ci*(matmul(H,mat)-matmul(mat,H))
    END FUNCTION lambda
 
    FUNCTION err(x1,x2)                                        ! Calculates the error

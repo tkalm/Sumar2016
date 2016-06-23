@@ -10,7 +10,7 @@
 
     INTEGER,          PARAMETER     :: NumThreads     = 2 !4
 
-    INTEGER,          PARAMETER     :: Nf  = 32 
+    INTEGER,          PARAMETER     :: Nf  = 16 
     INTEGER,          PARAMETER     :: Nt  = 100 
 
 
