@@ -30,13 +30,14 @@
    admat = Czero
    DO j = 1, Nf
       DO i = 1, Nf
-         IF(j == i+1) amat(i,j) = SQRT(FLOAT(i))
-         IF(i == j+1) admat(i,j) = SQRT(FLOAT(j))
+         IF(j == i+1)  amat(i,j)  = SQRT(FLOAT(i))
+         IF(i == j+1)  admat(i,j) = SQRT(FLOAT(j))
+         IF(i == j)    H          = i-0.5
       END DO
    END DO
-   Nmat = matmul(admat,amat)
    Odo = 0.4                                                    ! Omega (capital) divided by omega
-   H = (Nmat + 0.5) + Odo*(amat + admat)                        ! (Nmat+0.5)=H_0, Odo*(amat+admat)=H(t) 
+   H = H + Odo*(amat + admat) 
+   Nmat = matmul(admat,amat)
    
    rho = Czero
    rho(1,1) = 1                                                 ! Initial value of rho
@@ -58,7 +59,7 @@
    DO j=1,Nt/delt                                               ! Time grid
       DO                                                        ! Iterations
         rhon2 = rho + alpha*(lambda(rho) + lambda(rhon1))
-        IF(err(rhon1,rhon2)<1E-3) EXIT
+        IF(err(rhon1,rhon2)<1E-4) EXIT
         rhon1 = rhon2
       END DO
       rho=rhon2
