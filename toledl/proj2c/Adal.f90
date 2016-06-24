@@ -2,7 +2,8 @@
 !----------------------------------------------------------------------
 ! This program does the same thing as project 2a (calculates occupation
 ! of states of the system H=H0+H'(t) for t>0 given the state at t=0) 
-! except this time dissipation is added to the model.
+! except this time dissipation is added to the model (so if kappa=0 
+! this will give the same result).
 !----------------------------------------------------------------------
    USE omp_lib               ! For OpenMP parallel processing
    USE Mod_Precision         ! Module for setting double precision
@@ -31,13 +32,13 @@
    admat = Czero
    DO j = 1, Nf
       DO i = 1, Nf
-         IF(j == i+1)  amat(i,j)  = SQRT(FLOAT(i))/SQRT(FLOAT(2))      ! Lowering operator
-         IF(i == j+1)  admat(i,j) = SQRT(FLOAT(j))/SQRT(FLOAT(2))      ! Raising operator
+         IF(j == i+1)  amat(i,j)  = SQRT(FLOAT(i))                     ! Lowering operator
+         IF(i == j+1)  admat(i,j) = SQRT(FLOAT(j))                     ! Raising operator
          IF(i == j)    H(i,j)     = i-0.5                              ! Hamiltonian of harmonic oscillator
       END DO
    END DO
-   Odo        = 0.4                                                    ! Omega (capital) divided by omega
-   H          = H + Odo*(amat + admat)                                 ! Add the external static electric field 
+   Odo        = 1.0                                                    ! Omega (capital) divided by omega
+   H          = H + Odo*(amat + admat)/SQRT(FLOAT(2))                  ! Add the external static electric field 
    Nmat       = matmul(admat,amat)                                     ! Defined for convenience (used in lambda)
 
 ! Initial state of rho   
@@ -53,16 +54,16 @@
 
 ! Define constants used 
    hbaromega  = 1E-3                                                   ! Our energy scale, hbar*omega in eV
-   delt       = 1E-3                                                   ! The timestep of our approximation in ps 
+   delt       = 1E-2                                                   ! The timestep of our approximation in ps 
    alpha      = hbaromega*delt/(2*hbar)                                ! The constant in our equation below (hbar is in eV*ps)
-   kappa      = (1E-1)/2                                               ! The strength of dissipation (kappa/2) (appears in lambda)
+   kappa      = (0E-2)/2                                               ! The strength of dissipation (kappa/2) (appears in lambda)
 !------- Calculation --------------------------------------------------
 ! Calculate rho for t>0 by iteration of the Crank-Nicolson 
 ! approximation of the of  L-vN equation.  
    DO j=1, Nt/delt                                                     ! Time grid
       DO                                                               ! Iterations
         rhon2 = rho + alpha*(lambda(rho) + lambda(rhon1))              ! Our approximation
-        IF(   err(rhon1,rhon2) < 1E-4   )  EXIT                        ! Exit loop when desired accuracy is achieved
+        IF(   err(rhon1,rhon2) < 1E-3   )  EXIT                        ! Exit loop when desired accuracy is achieved
         rhon1 = rhon2                                                  ! Setup for next iteration
       END DO
       rho     = rhon2                                                  ! Setup for next timestep
@@ -79,7 +80,7 @@
    FUNCTION lambda(mat)                                                ! The superoperator in our equation 
       COMPLEX, DIMENSION(Nf,Nf)                :: lambda, matad
       COMPLEX, DIMENSION(:,:), INTENT(IN)      :: mat(:,:)
-      lambda = -ci*(matmul(H,mat)-matmul(mat,H))- &                    ! Commutator of hamiltonian and rho 
+      lambda = -ci*(matmul(H,mat)-matmul(mat,H))+ &                    ! Commutator of hamiltonian and rho 
       kappa*(2*matmul(amat,matmul(mat,admat)) - &                      ! The dissipation terms
       matmul(Nmat,mat) - matmul(mat,Nmat))                             ! The dissipation terms
    END FUNCTION lambda
