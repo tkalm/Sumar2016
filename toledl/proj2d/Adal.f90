@@ -1,6 +1,6 @@
    PROGRAM Adal
 !----------------------------------------------------------------------
-! This program does the same thing as project 2a (calculates occupation
+! This program does the same thing as project 2b (calculates occupation
 ! of states of the system H=H0+H'(t) for t>0 given the state at t=0) 
 ! except this time dissipation is added to the model (so if kappa=0 
 ! this will give the same result).
@@ -16,15 +16,11 @@
    IMPLICIT NONE
 !------- Local variables ----------------------------------------------
    INTEGER                           ::  i, j 
-   COMPLEX, DIMENSION(Nf,Nf)         ::  H, rho, rhon1, rhon2, amat, admat, Nmat
+   COMPLEX, DIMENSION(Nf,Nf)         ::  H, rho, rhon1, rhon2, amat, admat, Nmat, xmat, xxmat
    REAL                              ::  hbaromega, delt, alpha, kappa, Odo
 !------- Output -------------------------------------------------------
-   OPEN(UNIT=10,FILE=   'trace.dtx'       ,STATUS='NEW')
-   OPEN(UNIT=11,FILE=   'State0.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=12,FILE=   'State1.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=13,FILE=   'State2.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=14,FILE=   'State3.dtx'      ,STATUS='NEW')
-   OPEN(UNIT=15,FILE=   'State4.dtx'      ,STATUS='NEW')
+   OPEN(UNIT=11,FILE=   'expx.dtx'       ,STATUS='NEW')
+   OPEN(UNIT=12,FILE=   'expxx.dtx'      ,STATUS='NEW')
 !------- Definitions --------------------------------------------------
 ! Define hamiltonian of system and ladder operators used in lambda 
    H = Czero
@@ -37,26 +33,26 @@
          IF(i == j)    H(i,j)     = i-0.5                              ! Hamiltonian of harmonic oscillator
       END DO
    END DO
-   Odo        = 0.6                                                    ! Omega (capital) divided by omega
-   H          = H + Odo*(amat + admat)/SQRT(FLOAT(2))                  ! Add the external static electric field 
+   xmat       = (amat + admat)/SQRT(FLOAT(2))
+   xxmat      = matmul(xmat,xmat)
+   Odo        = 0.4                                                    ! Omega (capital) divided by omega
+   H          = H + Odo*xmat                                           ! Add the external static electric field 
    Nmat       = matmul(admat,amat)                                     ! Defined for convenience (used in lambda)
 
 ! Initial state of rho   
    rho        = Czero
-   rho(3,3)   = 1
+   rho(2,2)   = 1
    rhon1      = rho                                                    ! Setup for the iteration
 
-! Print the initial state
-   DO i=1,5                                                            ! The number of states printed
-      WRITE(10+i,FMT='(E15.8,2X,E15.8)') 0, REAL(rho(i,i))             ! The occupation of states at time t=0
-   END DO
-   WRITE(10,FMT="(E15.8,2X,E15.8)") 0, REAL(tr(rho))                   ! The trace of rho at time t=0
+! Print the initial expectation values 
+   WRITE(11,FMT="(E15.8,2X,E15.8)") 0, REAL(tr(matmul(rho,xmat)))      ! The trace of rho times x at time t=0
+   WRITE(12,FMT="(E15.8,2X,E15.8)") 0, REAL(tr(matmul(rho,xxmat)))     ! The trace of rho times x^2 at time t=0
 
 ! Define constants used 
    hbaromega  = 1E-3                                                   ! Our energy scale, hbar*omega in eV
    delt       = 1E-2                                                   ! The timestep of our approximation in ps 
    alpha      = hbaromega*delt/(2*hbar)                                ! The constant in our equation below (hbar is in eV*ps)
-   kappa      = (1E-1)/2                                               ! The strength of dissipation (kappa/2) (appears in lambda)
+   kappa      = (5E-2)/2                                               ! The strength of dissipation (kappa/2) (appears in lambda)
 !------- Calculation --------------------------------------------------
 ! Calculate rho for t>0 by iteration of the Crank-Nicolson 
 ! approximation of the of  L-vN equation.  
@@ -69,11 +65,9 @@
       rho     = rhon2                                                  ! Setup for next timestep
       rhon1   = rho                                                    ! Setup for next iteration
 
-! Print the desired entries of rho at t = j*delt. 
-      DO i=1,5                                                         ! The number of states printed
-        WRITE(10+i,FMT='(E15.8,2X,E15.8)') j*delt, REAL(rho(i,i))      ! The occupation of state i at time t = j*delt
-      END DO
-      WRITE(10,FMT="(E15.8,2X,E15.8)") j*delt, REAL(tr(rho))           ! The trace of rho at time t=j*delt
+! Print the expectation values at t = j*delt. 
+      WRITE(11,FMT="(E15.8,2X,E15.8)") j*delt, REAL(tr(matmul(rho,xmat)))      ! The trace of rho times x at time t=0
+      WRITE(12,FMT="(E15.8,2X,E15.8)") j*delt, REAL(tr(matmul(rho,xxmat)))     ! The trace of rho times x^2 at time t=0
    END DO
 !------ Functions used ------------------------------------------------
    CONTAINS
