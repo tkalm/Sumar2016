@@ -37,13 +37,13 @@
          IF(i == j)    H(i,j)     = i-0.5                              ! Hamiltonian of harmonic oscillator
       END DO
    END DO
-   Odo        = 1.0                                                    ! Omega (capital) divided by omega
+   Odo        = 0.6                                                    ! Omega (capital) divided by omega
    H          = H + Odo*(amat + admat)/SQRT(FLOAT(2))                  ! Add the external static electric field 
    Nmat       = matmul(admat,amat)                                     ! Defined for convenience (used in lambda)
 
 ! Initial state of rho   
    rho        = Czero
-   rho(1,1)   = 1
+   rho(3,3)   = 1
    rhon1      = rho                                                    ! Setup for the iteration
 
 ! Print the initial state
@@ -56,7 +56,7 @@
    hbaromega  = 1E-3                                                   ! Our energy scale, hbar*omega in eV
    delt       = 1E-2                                                   ! The timestep of our approximation in ps 
    alpha      = hbaromega*delt/(2*hbar)                                ! The constant in our equation below (hbar is in eV*ps)
-   kappa      = (0E-2)/2                                               ! The strength of dissipation (kappa/2) (appears in lambda)
+   kappa      = (1E-1)/2                                               ! The strength of dissipation (kappa/2) (appears in lambda)
 !------- Calculation --------------------------------------------------
 ! Calculate rho for t>0 by iteration of the Crank-Nicolson 
 ! approximation of the of  L-vN equation.  
