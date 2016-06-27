@@ -1,4 +1,4 @@
-   PROGRAM Adal
+PROGRAM Adal
 !----------------------------------------------------------------------
 ! This program does the same thing as project 2a (calculates occupation
 ! of states of the system H=H0+H'(t) for t>0 given the state at t=0) 
