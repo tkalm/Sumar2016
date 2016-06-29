@@ -28,8 +28,8 @@
    admat = Czero
    DO j = 1, Nf
       DO i = 1, Nf
-         IF(j == i+1)  amat(i,j)  = SQRT(FLOAT(i))                     ! Lowering operator
-         IF(i == j+1)  admat(i,j) = SQRT(FLOAT(j))                     ! Raising operator
+         IF(j == i+1)  admat(i,j)  = SQRT(FLOAT(i))                     ! Lowering operator
+         IF(i == j+1)  amat(i,j) = SQRT(FLOAT(j))                     ! Raising operator
          IF(i == j)    H(i,j)     = i-0.5                              ! Hamiltonian of harmonic oscillator
       END DO
    END DO
