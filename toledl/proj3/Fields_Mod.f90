@@ -11,10 +11,12 @@ MODULE Fields_Mod
    CHARACTER(LEN=1)            :: TransA, TransB
 !--------------------------------------------------------------------------
 !  Vectors
-   COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:)      :: Eigval 
+   COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:)      :: Eigval, minIm,&
+                         minABS
 !--------------------------------------------------------------------------
 !  Matrices 
    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: Hmat, rhomat, &
-                         amat, admat, Nmat, Imat, Limat, Eigvect, vl, vr
+                         amat, admat, Nmat, Imat, Limat, Eigvect, vl, vr,&
+                         rhoss
 !--------------------------------------------------------------------------
 END MODULE Fields_Mod

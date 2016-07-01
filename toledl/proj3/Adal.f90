@@ -13,7 +13,7 @@ PROGRAM Adal
 
    IMPLICIT NONE
 !------- Local variables ----------------------------------------------
-   INTEGER                           ::  i, j, ierr
+   INTEGER                           ::  i, j, l, ierr, ssloc
 !------- Output -------------------------------------------------------
    OPEN(UNIT=13,FILE=   'eigval.dtx'        ,STATUS='NEW')
    OPEN(UNIT=14,FILE=   'eigvec.dtx'        ,STATUS='NEW')
@@ -70,12 +70,32 @@ PROGRAM Adal
 
    DO j=1, Nf2
       DO i=1, Nf2
-         WRITE(11,FMT="(E15.8,1X)") LOG(ABS(REAL(vl(i,1))))
+         WRITE(14,FMT="(I4,1X,I4,1X,1024(E15.8,1X))") i, j, vr(i,j)
+      END DO
+      WRITE(14,FMT="()")
+      WRITE(14,FMT="()")
+   END DO
+   DEALLOCATE(Limat, STAT=ierr)
+
+!----------------------------------------------------------------------
+
+   ALLOCATE(rhoss(Nf,Nf), minIm(Nf2), minABS(Nf2), STAT=ierr)
+   minIm  = 100
+   minABS = 100
+   minIm  = MINLOC(ABS(AIMAG(Eigval)))
+   minABS = MINLOC(ABS(      Eigval))
+   IF(minIm(1) == minABS(1)) ssloc = minABS(1)                         ! Steady state location
+   DO j = 1, Nf
+      DO i = 1, Nf
+         l = Nf*(j-1) + i 
+         rhoss(i,j) = vr(l,ssloc)                                      ! Rho steady state 
       END DO
    END DO
-
-
-   DEALLOCATE(vl, vr, Eigval, Limat, rhomat, Hmat, admat, amat, Imat)
+   
+   ALLOCATE(Nrho(Nf,Nf),EaveM(Nf,Nf), STAT=ierr)                       ! Energy average matrix
+   Nrho  = MATMULVG(Nop,rhoss)
+   DEALLOCATE(vl, vr, Eigval, rhomat, Hmat, admat, amat, Imat, &
+              rhoss, minIm, minABS)
 !------ Functions used ------------------------------------------------
    CONTAINS
    FUNCTION kron(mat1,mat2)                                             ! Calculates the Kronecker product of matrices
