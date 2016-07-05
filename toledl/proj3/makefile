@@ -25,7 +25,7 @@ LIBSS_32=Slatec_Intel32_10p1
 #----------------------------------------------------------------------
 
 
-Adal: Precision_Mod.f90 Init_Mod.f90 Fields_Mod.f90 Adal.f90 
+Adal: Precision_Mod.f90 Init_Mod.f90 Fields_Mod.f90 KronAB.f90 KronATB.f90 PABz.f90 PAB.f90 PcAB.f90 Adal.f90 
 
-	ifort $(iFortOptions64) -o Adal Precision_Mod.f90 Init_Mod.f90 Fields_Mod.f90 Adal.f90 -L$(LIBDIRS) -l$(LIBSS) $(libOptions)
+	ifort $(iFortOptions64) -o Adal Precision_Mod.f90 Init_Mod.f90 Fields_Mod.f90 KronAB.f90 KronATB.f90 PABz.f90 PAB.f90 PcAB.f90 Adal.f90 -L$(LIBDIRS) -l$(LIBSS) $(libOptions)
 

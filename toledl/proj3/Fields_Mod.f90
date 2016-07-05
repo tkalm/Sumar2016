@@ -12,11 +12,11 @@ MODULE Fields_Mod
 !--------------------------------------------------------------------------
 !  Vectors
    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:)      :: Eigval, minIm,&
-                         minABS
+                         minABS, rho0v, rhotv
 !--------------------------------------------------------------------------
 !  Matrices 
-   COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: Hmat, rhomat, &
-                         amat, admat, Nmat, Imat, Limat, Eigvect, vl, vr,&
-                         rhoss
+   COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: Hmat, Nrho, &
+                         amat, admat, Nmat, Imat, Limat, vl, vr, einnT, &
+                         rhoss, EaveM, expiLt, vlU, vrV 
 !--------------------------------------------------------------------------
 END MODULE Fields_Mod
