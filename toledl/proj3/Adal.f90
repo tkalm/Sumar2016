@@ -23,12 +23,13 @@ PROGRAM Adal
    REAL(KIND=dp)                     ::  Nsum, Eave, time
    COMPLEX(KIND=dp)                  ::  cnorm
 !------- Output -------------------------------------------------------
-   OPEN(UNIT=12,FILE=   'test.dtx'          ,STATUS='NEW')
+   OPEN(UNIT=12,FILE=   'eigvallog.dtx'     ,STATUS='NEW')
    OPEN(UNIT=13,FILE=   'eigval.dtx'        ,STATUS='NEW')
    OPEN(UNIT=14,FILE=   'eigvec.dtx'        ,STATUS='NEW')
    OPEN(UNIT=15,FILE=   'nit.dtx'           ,STATUS='NEW')
    OPEN(UNIT=16,FILE=   'einnT.dtx'         ,STATUS='NEW')
    OPEN(UNIT=18,FILE=   'NEave.dtx'         ,STATUS='NEW')
+   OPEN(UNIT=19,FILE=   'mintest.dtx'       ,STATUS='NEW')
 !------- Definitions --------------------------------------------------
    ierr = 0
 ! Unit matrix
@@ -60,8 +61,8 @@ PROGRAM Adal
 
 ! The Liouville operator 
    ALLOCATE(Limat(Nf2,Nf2), STAT=ierr)
-   Limat      = KronM(Imat,Hmat) - KronTM(Hmat,Imat) - ci*kappa*KronTM(admat,amat)
-   Limat = Limat - ci*0.5*kappa*(KronM(Imat,Nmat) - KronTM(Nmat,Imat)) 
+   Limat      = KronM(Imat,Hmat) - KronTM(Hmat,Imat) + &
+   ci*kappa*0.5_dp*(2.0_dp*KronTM(admat,amat) - KronM(Imat,Nmat) - KronTM(Nmat,Imat)) 
 
 !------------------------------------------------------------------------------
    ALLOCATE(Eigval(Nf2),             STAT=ierr)
@@ -70,6 +71,7 @@ PROGRAM Adal
 
    DO i = 1, Nf2
       WRITE(13,FMT="(I6,1X,2(E15.8,1X))") i, Eigval(i)
+      WRITE(12,FMT="(I6,1X,2(E15.8,1X))") i, LOG(ABS(REAL(Eigval(i)))), LOG(ABS(AIMAG(Eigval(i))))
    END DO
 
    DO j=1, Nf2
@@ -84,11 +86,18 @@ PROGRAM Adal
 
 !------------------------------------------------------------------------------
    ALLOCATE(rhoss(Nf,Nf), minIm(Nf2), minABS(Nf2), STAT=ierr)
-   WRITE(12,FMT="(I6)") 1 
    minIm  = 100
    minABS = 100
+   DO i = 1, Nf2
+      WRITE(19,FMT='(I5,1X,E15.8,1X)')   i, REAL(minIm(i),dp)
+      WRITE(19,FMT='(I5,1X,E15.8,1X)')   i, REAL(minABS(i),dp)
+   END DO
    minIm  = MINLOC(ABS(AIMAG(Eigval)))
-   minABS = MINLOC(ABS(      Eigval))
+   minABS = MINLOC(ABS      (Eigval))
+   DO i = 1, Nf2
+      WRITE(19,FMT='(I5,1X,E15.8,1X)')   i, REAL(minIm(i),dp)
+      WRITE(19,FMT='(I5,1X,E15.8,1X)')   i, REAL(minABS(i),dp)
+   END DO
    IF(minIm(1) == minABS(1)) ssloc = minABS(1)                         ! Steady state location
    DO j = 1, Nf
       DO i = 1, Nf
@@ -150,7 +159,7 @@ PROGRAM Adal
       END DO
       rhotv             =  MATMUL(MATMULVGz(MATMULVG(vrV,expiLt),vlU),rho0v) 
       DO i = 1, Nf
-         WRITE(15,FMT="()") time*0.65820_dp, (REAL(rhotv(Nf*(i-1)+i)))
+         WRITE(15,FMT="(1000(E15.8,1X))") time*0.65820_dp, (REAL(rhotv(Nf*(i-1)+i)))
       END DO
    END DO
 

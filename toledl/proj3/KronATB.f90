@@ -32,5 +32,6 @@ MODULE KronATB
          END DO
       END DO
 !----------------------------------------------------------------------------
+      DEALLOCATE(mat1t, STAT=ierr) 
    END FUNCTION KronTM
 END MODULE KronATB 

@@ -5,7 +5,7 @@ MODULE Init_Mod
 !---------------------------------------------------------------------
 ! Calculation constants
     INTEGER,          PARAMETER     :: NumThreads = 2
-    INTEGER,          PARAMETER     :: Nf      = 2 
+    INTEGER,          PARAMETER     :: Nf      = 16
     INTEGER,          PARAMETER     :: Nf2     = Nf*Nf
     INTEGER,          PARAMETER     :: timeps  = 1000                    
     INTEGER,          PARAMETER     :: theta   = 0.1_dp*1.5193_dp        ! [time increament]/[h_bar] in units [1/meV]
@@ -15,7 +15,7 @@ MODULE Init_Mod
     REAL(KIND=dp),     PARAMETER    :: Odo     = 0.4_dp                  ! Omega (capital) divided by omega, the ratio of ang. freq.
     REAL(KIND=dp),     PARAMETER    :: hbar    = 6.582119514E-4          ! In units of eV*ps 
     REAL(KIND=dp),     PARAMETER    :: hbom    = 1.0_dp                  ! h_bar*omega in units of [meV] 
-    REAL(KIND=dp),     PARAMETER    :: kappa   = 0.1_dp                  ! The strength of dissipation 
+    REAL(KIND=dp),     PARAMETER    :: kappa   = 0.2_dp                  ! The strength of dissipation 
 ! Mathematical constants
     REAL(KIND=dp),     PARAMETER    :: pi      = 3.14159265358979324_dp
     REAL(KIND=dp),     PARAMETER    :: pi2i    = 1.0_dp/(2.0_dp*pi)
