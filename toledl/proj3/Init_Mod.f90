@@ -12,7 +12,7 @@ MODULE Init_Mod
     INTEGER,          PARAMETER     :: mu0     = 1                       ! Initial state of rho
 ! Physical constants
     REAL(KIND=dp),     PARAMETER    :: delt    = 0.1_dp*1.5193_dp        ! [Time increament]/[h_bar] in units of 1/[meV]
-    REAL(KIND=dp),     PARAMETER    :: Odo     = 0.4_dp                  ! Omega (capital) divided by omega, the ratio of ang. freq.
+    REAL(KIND=dp),     PARAMETER    :: lambda  = 0.4_dp                  ! Omega (capital) divided by omega, the ratio of ang. freq.
     REAL(KIND=dp),     PARAMETER    :: hbar    = 6.582119514E-4          ! In units of eV*ps 
     REAL(KIND=dp),     PARAMETER    :: hbom    = 1.0_dp                  ! h_bar*omega in units of [meV] 
     REAL(KIND=dp),     PARAMETER    :: kappa   = 0.2_dp                  ! The strength of dissipation 
