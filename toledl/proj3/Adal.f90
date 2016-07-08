@@ -141,14 +141,14 @@ PROGRAM Adal
       WRITE(16,FMT="()")
    END DO
 
-   DO j = 1, timeps
-      time               =  REAL((j-1),dp)*theta
+   DO j = 1, timetotal/delt
+      time               =  REAL((j-1),dp)*delt
       DO i = 1, Nf2
-         expiLt(i,i)     =  EXP(-ci*time*Eigval(i))
+         expiLt(i,i)     =  EXP(-ci*time*hbarinv*Eigval(i))
       END DO
       rhotv              =  MATMUL(MATMULVGz(MATMULVG(vrV,expiLt),vlU),rho0v) 
       DO i = 1, Nf
-         WRITE(15,FMT="(1000(E15.8,1X))") time*0.65820_dp, (REAL(rhotv(Nf*(i-1)+i)))
+         WRITE(15,FMT="(1000(E15.8,1X))") time, (REAL(rhotv(Nf*(i-1)+i)))
       END DO
    END DO
 
