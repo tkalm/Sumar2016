@@ -27,5 +27,5 @@ set key spacing "1.8"
 set boxwidth 0.35
 set style fill solid
 
-plot "eigvallog.dtx" using 1:(-abs($3)) axes x1y2 with boxes lt 6 notitle,\
+plot "eigvallog.dtx" using 1:3 axes x1y2 with boxes lt 6 notitle,\
      "eigvallog.dtx" using 1:2 axes x1y1 lt 7 notitle,\
