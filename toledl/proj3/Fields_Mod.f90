@@ -11,6 +11,7 @@ MODULE Fields_Mod
    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:)      :: Eigval, rho0v, rhotv
 !-- Matrices ----------------------------------------------------------------------------------------
    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: Imat, Hmat, amat, admat, &
-                         Nmat, Limat, vl, vr, ssExpEnMat, rhoss, einnT, expiLt, vlU, vrV
+                         Nmat, Limat, vl, vr, ssExpEnMat, rhoss, einnT, expiLt, vlU, vrV, &
+                         xmat
 !----------------------------------------------------------------------------------------------------
 END MODULE Fields_Mod

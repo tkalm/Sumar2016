@@ -39,16 +39,17 @@ PROGRAM Adal
    END DO
 
 ! Ladder operators
-   ALLOCATE(amat(Nf,Nf),admat(Nf,Nf), Nmat(Nf,Nf), STAT=ierr)
+   ALLOCATE(amat(Nf,Nf),admat(Nf,Nf), Nmat(Nf,Nf), xmat(Nf,Nf), STAT=ierr)
    amat  = Czero
    admat = Czero
    DO j = 1, Nf
       DO i = 1, Nf
-         IF(j == i+1)  admat(i,j) = SQRT(FLOAT(i))                              ! Raising  operator
-         IF(i == j+1)  amat(i,j)  = SQRT(FLOAT(j))                              ! Lowering operator
+         IF(j == i+1)  amat(i,j)   = SQRT(FLOAT(i))                             ! Lowering operator
+         IF(i == j+1)  admat(i,j)  = SQRT(FLOAT(j))                             ! Raising  operator
       END DO
    END DO
    Nmat          = MATMULVG(admat,amat)                                         ! Number   operator 
+   xmat          = (amat + admat)/sq2                                           ! Position operator
 
 ! Hamiltonian
    ALLOCATE(Hmat(Nf,Nf), STAT=ierr)
@@ -56,7 +57,7 @@ PROGRAM Adal
    DO i = 1, Nf
       Hmat(i,i)  = CMPLX((REAL(i-1,dp))+0.5_dp,0.0_dp,dp)
    END DO
-   Hmat          = Hmat + lambda*(amat + admat)/SQRT(FLOAT(2))                  ! Add the external static electric field 
+   Hmat          = Hmat + lambda*xmat
 
 ! The Liouville operator 
    ALLOCATE(Limat(Nf2,Nf2), STAT=ierr)

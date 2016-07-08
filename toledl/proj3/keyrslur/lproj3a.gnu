@@ -6,8 +6,8 @@ set output 'graphproj3alog.eps'
 
 
 set xrange [0:256]
-set yrange [-36:5]
-set y2range [-36:0]
+set yrange [-37:5]
+set y2range [-37:0]
 set ytics 5 nomirror tc lt 7  # lc rgb '#4CA305'
 set y2tics 5 nomirror tc lt 6 # lc rgb '#A30D05'
 
