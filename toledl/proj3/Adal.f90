@@ -141,15 +141,14 @@ PROGRAM Adal
       WRITE(16,FMT="()")
    END DO
 
+   WRITE(15,FMT="(1X,A4,12X,9(A5,I1,10X),90(A5,I2,9X))") "Time", ("State", i, i=1, 9), ("State", i, i=10, Nf)
    DO j = 1, timetotal/delt
       time               =  REAL((j-1),dp)*delt
       DO i = 1, Nf2
          expiLt(i,i)     =  EXP(-ci*time*hbarinv*Eigval(i))
       END DO
       rhotv              =  MATMUL(MATMULVGz(MATMULVG(vrV,expiLt),vlU),rho0v) 
-      DO i = 1, Nf
-         WRITE(15,FMT="(1000(E15.8,1X))") time, (REAL(rhotv(Nf*(i-1)+i)))
-      END DO
+      WRITE(15,FMT="(1000(E15.8,1X))") time, (REAL(rhotv(Nf*(i-1)+i)), i=1, Nf)
    END DO
 
 !------------------------------------------------------------------------------
