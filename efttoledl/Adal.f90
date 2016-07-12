@@ -40,6 +40,7 @@ PROGRAM Adal
 
 ! Ladder operators
    ALLOCATE(amat(Nf,Nf),admat(Nf,Nf), Nmat(Nf,Nf), xmat(Nf,Nf), STAT=ierr)
+   ALLOCATE(x4mat(Nf,Nf), STAT=ierr)
    amat  = Czero
    admat = Czero
    DO j = 1, Nf
@@ -50,6 +51,8 @@ PROGRAM Adal
    END DO
    Nmat          = MATMULVG(admat,amat)                                         ! Number   operator 
    xmat          = (amat + admat)/sq2                                           ! Position operator
+   x4mat         = matmul(xmat,xmat)                                            ! x to the 
+   x4mat         = matmul(x4mat,x4mat)                                          ! fourth power
 
 ! Hamiltonian
    ALLOCATE(Hmat(Nf,Nf), STAT=ierr)
@@ -57,7 +60,7 @@ PROGRAM Adal
    DO i = 1, Nf
       Hmat(i,i)  = CMPLX((REAL(i-1,dp))+0.5_dp,0.0_dp,dp)
    END DO
-   Hmat          = Hmat + lambda*xmat
+   Hmat          = Hmat + lambda*x4mat
 
 ! The Liouville operator 
    ALLOCATE(Limat(Nf2,Nf2), STAT=ierr)

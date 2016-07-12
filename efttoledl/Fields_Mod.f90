@@ -12,6 +12,6 @@ MODULE Fields_Mod
 !-- Matrices ----------------------------------------------------------------------------------------
    COMPLEX(KIND=dp),     ALLOCATABLE, DIMENSION(:,:)    :: Imat, Hmat, amat, admat, &
                          Nmat, Limat, vl, vr, ssExpEnMat, rhoss, einnT, expiLt, vlU, vrV, &
-                         xmat
+                         xmat, x4mat
 !----------------------------------------------------------------------------------------------------
 END MODULE Fields_Mod
