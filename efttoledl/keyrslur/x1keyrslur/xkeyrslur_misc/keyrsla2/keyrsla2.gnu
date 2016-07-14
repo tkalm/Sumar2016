@@ -12,15 +12,15 @@ set xlabel "Time [ps]"
 set ylabel "Occupation"
 
 # Header
-set title "Time evolution of the occupation of states x^2 + x^4\n \
-{Initalial state |5>, {/Symbol k} = 0.05E_0 (red) and {/Symbol k} = 0.4E_0 (orange), \n \
+set title "Time evolution of the occupation of states x^2 + x\n \
+{Initalial state |5>, {/Symbol k} = 0.05E_0 (orange) and {/Symbol k} = 0.4E_0 (yellow), \n \
 Energies: E_0 = {/=12 @^{/Symbol=10 -}{/=14 h}}{/Symbol w}_0 = 1.0 meV \
-and  {/=12 @^{/Symbol=10 -}{/=14 h}}{/Symbol W} = 0.5 meV"
+and  {/=12 @^{/Symbol=10 -}{/=14 h}}{/Symbol W} = 1.0 meV"
 
 # Key
-set key right center 
-set key font ",18"
-set key spacing "1.8"
+set key right top 
+set key font ",14"
+set key spacing "1.2"
 
 # Line colors
 #      Yellow
